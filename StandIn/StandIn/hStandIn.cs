@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Runtime.InteropServices;
@@ -443,7 +443,7 @@ namespace StandIn
 			return new string(sPass);
 		}
 
-        public static SearchObject createSearchObject(String sDomain = "", String sUser = "", String sPass = "", Boolean ActOnBehalf = false)
+        public static SearchObject createSearchObject(String sDomain = "", String sUser = "", String sPass = "", String sDC = null, Boolean ActOnBehalf = false)
         {
             DirectoryEntry de = null;
             DirectorySearcher ds = null;
@@ -451,8 +451,13 @@ namespace StandIn
             try
             {
                 de = new DirectoryEntry();
-                resultObject.sDC = de.Options.GetCurrentServerName();
-                Console.WriteLine("\n[?] Using DC : " + de.Options.GetCurrentServerName());
+                if (sDC == null) {
+                    resultObject.sDC = de.Options.GetCurrentServerName();
+                }
+                else {
+                    resultObject.sDC = sDC;
+                }
+                Console.WriteLine("\n[?] Using DC : " + resultObject.sDC);
                 if (!String.IsNullOrEmpty(sDomain) && !String.IsNullOrEmpty(sUser) && !String.IsNullOrEmpty(sPass))
                 {
                     String sUserDomain = String.Format("{0}\\{1}", sDomain, sUser);

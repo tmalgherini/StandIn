@@ -16,10 +16,10 @@ namespace StandIn
 {
     class Program
     {
-        public static void returnObject(String sObject, String sDomain = "", String sUser = "", String sPass = "", String sFilter = "")
+        public static void returnObject(String sObject, String sDomain = "", String sUser = "", String sPass = "", String sFilter = "", String sDC = null)
         {
             // Create searcher
-            hStandIn.SearchObject so = hStandIn.createSearchObject(sDomain, sUser, sPass);
+            hStandIn.SearchObject so = hStandIn.createSearchObject(sDomain, sUser, sPass, sDC);
             if (!so.success)
             {
                 Console.WriteLine("[!] Failed to create directory searcher..");
@@ -193,10 +193,10 @@ namespace StandIn
             }
         }
 
-        public static void returnLDAP(String sLDAP, String sDomain = "", String sUser = "", String sPass = "", String sFilter = "", UInt32 iLimit = 0)
+        public static void returnLDAP(String sLDAP, String sDomain = "", String sUser = "", String sPass = "", String sFilter = "", UInt32 iLimit = 0, String sDC = null)
         {
             // Create searcher
-            hStandIn.SearchObject so = hStandIn.createSearchObject(sDomain, sUser, sPass);
+            hStandIn.SearchObject so = hStandIn.createSearchObject(sDomain, sUser, sPass, sDC);
             if (!so.success)
             {
                 Console.WriteLine("[!] Failed to create directory searcher..");
@@ -1345,10 +1345,10 @@ namespace StandIn
             }
         }
 
-        public static void setAllowedToActOnBehalfOfOtherIdentity(String sMachineName, String sObjectSID, String sDomain = "", String sUser = "", String sPass = "")
+        public static void setAllowedToActOnBehalfOfOtherIdentity(String sMachineName, String sObjectSID, String sDomain = "", String sUser = "", String sPass = "", String sDC = null)
         {
             // Create searcher
-            hStandIn.SearchObject so = hStandIn.createSearchObject(sDomain, sUser, sPass, true);
+            hStandIn.SearchObject so = hStandIn.createSearchObject(sDomain, sUser, sPass, sDC, true);
             if (!so.success)
             {
                 Console.WriteLine("[!] Failed to create directory searcher..");
@@ -1416,10 +1416,10 @@ namespace StandIn
             }
         }
 
-        public static void removeAllowedToActOnBehalfOfOtherIdentity(String sMachineName, String sDomain = "", String sUser = "", String sPass = "")
+        public static void removeAllowedToActOnBehalfOfOtherIdentity(String sMachineName, String sDomain = "", String sUser = "", String sPass = "", String sDC = null)
         {
             // Create searcher
-            hStandIn.SearchObject so = hStandIn.createSearchObject(sDomain, sUser, sPass, true);
+            hStandIn.SearchObject so = hStandIn.createSearchObject(sDomain, sUser, sPass, sDC, true);
             if (!so.success)
             {
                 Console.WriteLine("[!] Failed to create directory searcher..");
@@ -1710,10 +1710,10 @@ namespace StandIn
             }
         }
 
-        public static void getObjectAccessPermissions(String sObject, String sNTAccount = "", String sDomain = "", String sUser = "", String sPass = "")
+        public static void getObjectAccessPermissions(String sObject, String sNTAccount = "", String sDomain = "", String sUser = "", String sPass = "", String sDC = null)
         {
             // Create searcher
-            hStandIn.SearchObject so = hStandIn.createSearchObject(sDomain, sUser, sPass);
+            hStandIn.SearchObject so = hStandIn.createSearchObject(sDomain, sUser, sPass, sDC);
             if (!so.success)
             {
                 Console.WriteLine("[!] Failed to create directory searcher..");
@@ -2012,7 +2012,7 @@ namespace StandIn
             }
         }
 
-        public static void addUserToGroup(String sGroup, String sAddUser, String sDomain = "", String sUser = "", String sPass = "")
+        public static void addUserToGroup(String sGroup, String sAddUser, String sDomain = "", String sUser = "", String sPass = "", String sDC = null)
         {
             try
             {
@@ -2021,6 +2021,11 @@ namespace StandIn
                 {
                     String sUserDomain = String.Format("{0}\\{1}", sDomain, sUser);
                     pc = new PrincipalContext(ContextType.Domain, sDomain, sUser, sPass);
+                }
+                else if (!String.IsNullOrEmpty(sDomain) && !String.IsNullOrEmpty(sDC))
+                {
+                    pc = new PrincipalContext(ContextType.Domain, sDomain);
+
                 }
                 else
                 {
@@ -2056,7 +2061,7 @@ namespace StandIn
             }
         }
 
-        public static void removeUserFromGroup(String sGroup, String sRmUser, String sDomain = "", String sUser = "", String sPass = "")
+        public static void removeUserFromGroup(String sGroup, String sRmUser, String sDomain = "", String sUser = "", String sPass = "", String sDC = null)
         {
             try
             {
@@ -2065,6 +2070,11 @@ namespace StandIn
                 {
                     String sUserDomain = String.Format("{0}\\{1}", sDomain, sUser);
                     pc = new PrincipalContext(ContextType.Domain, sDomain, sUser, sPass);
+                }
+                else if (!String.IsNullOrEmpty(sDomain) && !String.IsNullOrEmpty(sDC))
+                {
+                    pc = new PrincipalContext(ContextType.Domain, sDomain);
+
                 }
                 else
                 {
@@ -2109,7 +2119,7 @@ namespace StandIn
             }
         }
 
-        public static void getGroupMembership(String sGroup, String sDomain = "", String sUser = "", String sPass = "")
+        public static void getGroupMembership(String sGroup, String sDomain = "", String sUser = "", String sPass = "", String sDC = null)
         {
             try
             {
@@ -2118,6 +2128,11 @@ namespace StandIn
                 {
                     String sUserDomain = String.Format("{0}\\{1}", sDomain, sUser);
                     pc = new PrincipalContext(ContextType.Domain, sDomain, sUser, sPass);
+                }
+                else if (!String.IsNullOrEmpty(sDomain) && !String.IsNullOrEmpty(sDC))
+                {
+                    pc = new PrincipalContext(ContextType.Domain, sDomain);
+                    
                 }
                 else
                 {
@@ -4061,6 +4076,9 @@ namespace StandIn
         // Args
         class ArgOptions
         {
+            [Option(null, "domaincontroller")]
+            public String sDC { get; set; }
+
             [Option(null, "computer")]
             public String sComp { get; set; }
 
@@ -4239,7 +4257,7 @@ namespace StandIn
                         {
                             if (ArgOptions.bRemove)
                             {
-                                removeAllowedToActOnBehalfOfOtherIdentity(ArgOptions.sComp, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass);
+                                removeAllowedToActOnBehalfOfOtherIdentity(ArgOptions.sComp, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass, ArgOptions.sDC);
                             }
                             else if (ArgOptions.bMake)
                             {
@@ -4270,7 +4288,7 @@ namespace StandIn
                         {
                             if (ArgOptions.bAccess)
                             {
-                                getObjectAccessPermissions(ArgOptions.sObject, ArgOptions.sNtaccount, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass);
+                                getObjectAccessPermissions(ArgOptions.sObject, ArgOptions.sNtaccount, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass, ArgOptions.sDC);
                             }
                             else if (!String.IsNullOrEmpty(ArgOptions.sGrant))
                             {
@@ -4312,7 +4330,7 @@ namespace StandIn
                             }
                             else
                             {
-                                returnObject(ArgOptions.sObject, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass, ArgOptions.sFilter);
+                                returnObject(ArgOptions.sObject, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass, ArgOptions.sFilter, ArgOptions.sDC);
                             }
                         }
                         else if (!String.IsNullOrEmpty(ArgOptions.sGroup))
@@ -4321,15 +4339,15 @@ namespace StandIn
                             {
                                 if (ArgOptions.bAdd)
                                 {
-                                    addUserToGroup(ArgOptions.sGroup, ArgOptions.sNtaccount, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass);
+                                    addUserToGroup(ArgOptions.sGroup, ArgOptions.sNtaccount, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass, ArgOptions.sDC);
                                 } else
                                 {
-                                    removeUserFromGroup(ArgOptions.sGroup, ArgOptions.sNtaccount, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass);
+                                    removeUserFromGroup(ArgOptions.sGroup, ArgOptions.sNtaccount, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass, ArgOptions.sDC);
                                 }
                             }
                             else
                             {
-                                getGroupMembership(ArgOptions.sGroup, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass);
+                                getGroupMembership(ArgOptions.sGroup, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass, ArgOptions.sDC);
                             }
                         }
                         else if (ArgOptions.bSPN)
@@ -4354,7 +4372,7 @@ namespace StandIn
                         }
                         else if (!String.IsNullOrEmpty(ArgOptions.sLdap))
                         {
-                            returnLDAP(ArgOptions.sLdap, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass, ArgOptions.sFilter, ArgOptions.iLimit);
+                            returnLDAP(ArgOptions.sLdap, ArgOptions.sDomain, ArgOptions.sUser, ArgOptions.sPass, ArgOptions.sFilter, ArgOptions.iLimit, ArgOptions.sDC);
                         }
                         else if (ArgOptions.bGPO)
                         {
